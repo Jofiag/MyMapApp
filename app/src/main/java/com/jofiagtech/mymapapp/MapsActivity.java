@@ -56,14 +56,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
         mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID); //Type of the map
 
-        sydneyMarker = mMap.addMarker(new MarkerOptions()
-                .position(sydney) // The marker concerned
-                .title("Sydney") // The title of the icon (pointer)
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))// The color of the pointer
-                .alpha(0.8f)); //The visibility of the pointer 0.1 to 0.8
-        //mMap.moveCamera(CameraUpdateFactory.newLatLng(uca)); // Without zooming
-
-        medicineSchoolMarker = mMap.addMarker(new MarkerOptions()
+        /*
+        * medicineSchoolMarker = mMap.addMarker(new MarkerOptions()
                 .position(medicineSchool)
                 .title("Medicine School")
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
@@ -73,6 +67,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .title("Law School")
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
 
+        * */
+        setMarker(medicineSchoolMarker, medicineSchool, "Medicine school", BitmapDescriptorFactory.HUE_GREEN);
+        setMarker(lawSchoolMarker, lawSchool, "Law school", BitmapDescriptorFactory.HUE_BLUE);
+
+        sydneyMarker = mMap.addMarker(new MarkerOptions()
+                .position(sydney) // The marker concerned
+                .title("Sydney") // The title of the icon (pointer)
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))// The color of the pointer
+                .alpha(0.8f)); //The visibility of the pointer 0.1 to 0.8
+        //mMap.moveCamera(CameraUpdateFactory.newLatLng(uca)); // Without zooming
+
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 10));// Zooming 1 to 20
+    }
+
+    private void setMarker(Marker marker, LatLng latLng, String title, float iconColor)
+    {
+        marker = mMap.addMarker(new MarkerOptions()
+                .position(latLng)
+                .title(title)
+                .icon(BitmapDescriptorFactory.defaultMarker(iconColor)));
     }
 }
