@@ -1,11 +1,20 @@
 package com.jofiagtech.mymapapp;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -29,8 +38,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Marker sydneyMarker;
     private Marker medicineSchoolMarker;
     private Marker lawSchoolMarker;
+    private Marker userMarker;
 
     private ArrayList<Marker> mMarkerList;
+
+    private LocationManager mLocationManager;
+    private LocationListener mLocationListener;
+
+    private LatLng mUserLatlng;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -42,11 +57,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+
         sydney = new LatLng(-34, 151);
         medicineSchool = new LatLng(45.7591014, 3.0871082);
         lawSchool = new LatLng(45.7591337, 3.0717873);
+        mUserLatlng = getUserLatLng();
+
+        /*if (mUserLatlng != null)
+            userLocation = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
+        else
+            Toast.makeText(this, "Getting position failed !", Toast.LENGTH_LONG).show();*/
 
         mMarkerList = new ArrayList<>();
+
+
     }
 
 
@@ -79,14 +103,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         * */
         medicineSchoolMarker = setMarker(medicineSchool, "Medicine school", BitmapDescriptorFactory.HUE_GREEN, 0.8f);
         lawSchoolMarker = setMarker(lawSchool, "Law school", BitmapDescriptorFactory.HUE_BLUE, 0.8f);
-        sydneyMarker = setMarker(sydney, "Sydney", 0.8f, 0.8f);
+        sydneyMarker = setMarker(sydney, "Sydney", BitmapDescriptorFactory.HUE_RED, 0.8f);
 
         mMarkerList.add(medicineSchoolMarker);
         mMarkerList.add(lawSchoolMarker);
         mMarkerList.add(sydneyMarker);
 
+        if (mUserLatlng != null){
+            userMarker = setMarker(mUserLatlng, "My position", 0.0f, 0.8f);
+            mMarkerList.add(userMarker);
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userMarker.getPosition(), 8));
+        }
+        else
+            Toast.makeText(MapsActivity.this, "Getting this phone Location failed !!!", Toast.LENGTH_LONG).show();
+
+
+
         for (Marker marker : mMarkerList) {
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), 4));
             Log.d(TAG, "onMapReady: " + marker.getTitle());
         }
 
@@ -95,7 +128,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 10));// Zooming 1 to 20
     }
 
-    private Marker setMarker(LatLng latLng, String title, Float iconColor, Float transparencyLevel) {
+    private Marker setMarker(LatLng latLng, String title, Float iconColor, Float transparencyLevel)
+    {
         Marker marker;
 
         marker = mMap.addMarker(new MarkerOptions()
@@ -105,5 +139,68 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .alpha(transparencyLevel));//The visibility of the pointer 0.1 to 0.8
 
         return marker;
+    }
+
+    private void setUserLocation(LatLng latLng){
+        mUserLatlng = latLng;
+    }
+    private LatLng getUserLatLng()
+    {
+        final LatLng usr;
+        mLocationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
+        mLocationListener = new LocationListener()
+        {
+            @Override
+            public void onLocationChanged(Location location) {
+                setUserLocation(new LatLng(location.getLatitude(), location.getLongitude()));
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras)
+            {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String provider)
+            {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String provider)
+            {
+
+            }
+        };
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            }
+        }
+        else{
+            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                0, 0, mLocationListener);
+
+            Location location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            return new LatLng(location.getLatitude(), location.getLongitude());
+        }
+
+        return null;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        int accessFineLocation = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION);
+
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+            if (accessFineLocation == PackageManager.PERMISSION_GRANTED)
+                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                        0,0, mLocationListener);
+        }
     }
 }
