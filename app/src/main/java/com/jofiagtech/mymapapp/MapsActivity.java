@@ -13,6 +13,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
+
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 {
     private GoogleMap mMap;
@@ -24,6 +26,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Marker sydneyMarker;
     private Marker medicineSchoolMarker;
     private Marker lawSchoolMarker;
+
+    private ArrayList<Marker> mMarkerList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -38,6 +42,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         sydney = new LatLng(-34, 151);
         medicineSchool = new LatLng(45.7591014, 3.0871082);
         lawSchool = new LatLng(45.7591337, 3.0717873);
+
+        mMarkerList = new ArrayList<>();
     }
 
 
@@ -72,9 +78,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setMarker(lawSchoolMarker, lawSchool, "Law school", BitmapDescriptorFactory.HUE_BLUE, null);
         setMarker(sydneyMarker, sydney, "Sydney", 0.8f, null);
 
+        mMarkerList.add(medicineSchoolMarker);
+        mMarkerList.add(lawSchoolMarker);
+        mMarkerList.add(sydneyMarker);
+
 
         //mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney)); // Without zooming
-
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 10));// Zooming 1 to 20
     }
 
