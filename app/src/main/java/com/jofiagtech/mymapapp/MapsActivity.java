@@ -3,7 +3,9 @@ package com.jofiagtech.mymapapp;
 import androidx.fragment.app.FragmentActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -17,6 +19,7 @@ import java.util.ArrayList;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 {
+    private static final String TAG = "MapLoc";
     private GoogleMap mMap;
 
     private LatLng sydney;
@@ -74,25 +77,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
 
         * */
-        setMarker(medicineSchoolMarker, medicineSchool, "Medicine school", BitmapDescriptorFactory.HUE_GREEN, null);
-        setMarker(lawSchoolMarker, lawSchool, "Law school", BitmapDescriptorFactory.HUE_BLUE, null);
-        setMarker(sydneyMarker, sydney, "Sydney", 0.8f, null);
+        medicineSchoolMarker = setMarker(medicineSchool, "Medicine school", BitmapDescriptorFactory.HUE_GREEN, 0.8f);
+        lawSchoolMarker = setMarker(lawSchool, "Law school", BitmapDescriptorFactory.HUE_BLUE, 0.8f);
+        sydneyMarker = setMarker(sydney, "Sydney", 0.8f, 0.8f);
 
         mMarkerList.add(medicineSchoolMarker);
         mMarkerList.add(lawSchoolMarker);
         mMarkerList.add(sydneyMarker);
 
+        for (Marker marker : mMarkerList) {
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), 4));
+            Log.d(TAG, "onMapReady: " + marker.getTitle());
+        }
+
 
         //mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney)); // Without zooming
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 10));// Zooming 1 to 20
+        //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 10));// Zooming 1 to 20
     }
 
-    private void setMarker(Marker marker, LatLng latLng, String title, Float iconColor, Float zoomLevel)
-    {
+    private Marker setMarker(LatLng latLng, String title, Float iconColor, Float transparencyLevel) {
+        Marker marker;
+
         marker = mMap.addMarker(new MarkerOptions()
                 .position(latLng)
                 .title(title) // The title of the icon (pointer)
                 .icon(BitmapDescriptorFactory.defaultMarker(iconColor))// The color of the pointer
-                .alpha(zoomLevel));//The visibility of the pointer 0.1 to 0.8
+                .alpha(transparencyLevel));//The visibility of the pointer 0.1 to 0.8
+
+        return marker;
     }
 }
