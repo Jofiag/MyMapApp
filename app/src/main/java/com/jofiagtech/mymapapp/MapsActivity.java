@@ -8,15 +8,22 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 {
-
     private GoogleMap mMap;
+
+    private LatLng sydney;
+    private LatLng medicineSchool;
+    private LatLng lawSchool;
+
+    private Marker sydneyMarker;
+    private Marker medicineSchoolMarker;
+    private Marker lawSchoolMarker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -27,6 +34,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        sydney = new LatLng(-34, 151);
+        medicineSchool = new LatLng(45.7591014, 3.0871082);
+        lawSchool = new LatLng(45.7591337, 3.0717873);
     }
 
 
@@ -43,15 +54,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap)
     {
         mMap = googleMap;
-
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(45.776524, 3.092465);
-        LatLng uca = new LatLng(-34, 151);
         mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID); //Type of the map
-        mMap.addMarker(new MarkerOptions().position(uca).title("Clermont Auvergne University")
-        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))// The color of the pointer
-        .alpha(0.8f)); //The visibility of the pointer 0.1 to 0.8
+
+        sydneyMarker = mMap.addMarker(new MarkerOptions()
+                .position(sydney) // The marker concerned
+                .title("Sydney") // The title of the icon (pointer)
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))// The color of the pointer
+                .alpha(0.8f)); //The visibility of the pointer 0.1 to 0.8
         //mMap.moveCamera(CameraUpdateFactory.newLatLng(uca)); // Without zooming
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(uca, 10));// Zooming 1 to 20
+
+        medicineSchoolMarker = mMap.addMarker(new MarkerOptions()
+                .position(medicineSchool)
+                .title("Medicine School")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+
+        lawSchoolMarker = mMap.addMarker(new MarkerOptions()
+                .position(lawSchool)
+                .title("Law School")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 10));// Zooming 1 to 20
     }
 }
