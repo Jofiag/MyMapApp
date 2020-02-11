@@ -68,24 +68,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
 
         * */
-        setMarker(medicineSchoolMarker, medicineSchool, "Medicine school", BitmapDescriptorFactory.HUE_GREEN);
-        setMarker(lawSchoolMarker, lawSchool, "Law school", BitmapDescriptorFactory.HUE_BLUE);
+        setMarker(medicineSchoolMarker, medicineSchool, "Medicine school", BitmapDescriptorFactory.HUE_GREEN, null);
+        setMarker(lawSchoolMarker, lawSchool, "Law school", BitmapDescriptorFactory.HUE_BLUE, null);
+        setMarker(sydneyMarker, sydney, "Sydney", 0.8f, null);
 
-        sydneyMarker = mMap.addMarker(new MarkerOptions()
-                .position(sydney) // The marker concerned
-                .title("Sydney") // The title of the icon (pointer)
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))// The color of the pointer
-                .alpha(0.8f)); //The visibility of the pointer 0.1 to 0.8
-        //mMap.moveCamera(CameraUpdateFactory.newLatLng(uca)); // Without zooming
+
+        //mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney)); // Without zooming
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 10));// Zooming 1 to 20
     }
 
-    private void setMarker(Marker marker, LatLng latLng, String title, float iconColor)
+    private void setMarker(Marker marker, LatLng latLng, String title, Float iconColor, Float zoomLevel)
     {
         marker = mMap.addMarker(new MarkerOptions()
                 .position(latLng)
-                .title(title)
-                .icon(BitmapDescriptorFactory.defaultMarker(iconColor)));
+                .title(title) // The title of the icon (pointer)
+                .icon(BitmapDescriptorFactory.defaultMarker(iconColor))// The color of the pointer
+                .alpha(zoomLevel));//The visibility of the pointer 0.1 to 0.8
     }
 }
